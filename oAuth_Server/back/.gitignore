@@ -1,4 +1,3 @@
 /node_modules
-contracts
 .env
-config.json
+config/

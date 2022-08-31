@@ -8,10 +8,8 @@ const nodeMailer = require('nodemailer');
 const router = express.Router();
 const DID = require('../contracts/DID.json');
 const { deployed } = require('../web3.js');
-const { user, sequelize } = require('../models');
+const { user, sequelize, AccessSite } = require('../models');
 const { Op } = require('sequelize');
-const { AccessSite } = require('../models');
-const { addAbortSignal } = require('stream');
 
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.OPTIMISM_GOERLI_URL));
 
@@ -312,7 +310,7 @@ router.use('/updateRedirect', async (req,res) => {
 
 router.post('/oAuthRegister', async (req, res) => {
     const { email, password, gender, name, age, addr, mobile } = req.body;
-    // 이메일,패스워드,성별,이름,나이,주소,핸드폰번호
+
     try {
         const userHash = email + password;
         const hash = crypto.createHash('sha256').update(userHash).digest('base64');

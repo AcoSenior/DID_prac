@@ -37,19 +37,21 @@ https://optimismfaucet.xyz/
 
 다 했으면 이제 네트워크에 배포를 진행한다.
 
-npx truffle migration --network optimism-goerli
+{
+    npx truffle migration --network optimism-goerli
 
-npx truffle migration --reset --network optimism-goerli
+    npx truffle migration --reset --network optimism-goerli
 
-npx truffle console --network optimism-goerli
+    npx truffle console --network optimism-goerli
+}
 
 네트워크 아이디를 설정해주지 않으면 디폴트인 가나시로 배포를 하려고 하기 때문에 에러가 뜬다.
 
 뒤에 --networkid 플래그를 붙여줘야 함.
 
-ca :  0x4E76aBd01Df9f66E5a003b3A02f59261bEaaD5F7
-block# :  746449
-txHash : 0x3414a3f4de9637e58eb38c2cf460b92288d1fa14da0e46ee206c128a3e87937e
+ca :  0x21Ce640c5d79Ea8A5113f5fB69279038B646E53d
+block# :  1
+txHash : 0xebbb5086e039c5eca6d4985f59490cd3b3b2d84d2a925dbbd3e55b5559d3422f
 block exp : https://goerli-optimism.etherscan.io/
 
 콘솔로 컨트랙트를 좀 뒤적이고 싶으면
@@ -102,12 +104,85 @@ b) 사용자가 oauth 서버에서 회원 가입을 완료하면 oauth의 백엔
 
 이런 hash가 등록되어있는지 여부를 t/f로 알려주는 mapping-isRegistered 하나
 
+
 ---
-
-i) Create - Done!
-
-이미 되어 있음.
 
 
 `` 8/31
+
+뭐부터 할까..
+
+oauth 서버의 기능은 크게 두 가지로 나뉜다.
+
+
+1. 첫 번째는 사용자에 관련된 기능
+
+id, pw를 이용해 로그인을 하고, 이 상태에서 자신의 개인 정보를 읽고 수정할 수 있어야 한다.
+
+* 사실 연동 해지 기능도 좀 만들고 싶은데 이 메커니즘을 어떤식으로 해야 할 지 아직 모르겠음. oauth login을 한 후에 시도해보도록 하자.
+
+
+2. 두 번째는 클라이언트 서버 관리자와 관련된 기능 (카카오 Develpoer 생각하면 됨)
+
+oauth서버와 연동할 어플리케이션을 등록할 수 있어야 하고,
+
+자신이 연동한 어플리케이션 목록을 볼 수 있어야 하고,
+
+각 어플리케이션 페이지에서 rest api, client_secret 확인, 사용자에게 어떤 정보를 제공받을지 설정할 수 있어야 한다.
+
+
+3. oauth 서버에서는 이에 관련한 정보를 db에 저장한다.
+
+app - 사용자에게 어떤 정보를 받을지 : { appName, email(service owner), email(제공 여부 - 아마 거의 T로 받는게 좋겠지만), gender, mobile 등.. }
+
+app - 어플리케이션 동작에 관한 정보 : { email(owner), appName, redirectURI, restAPI, client_secret }
+
+user - 사용자 각각을 특정할 hash(id+pw)에 그 해시 주인의 각 사이트의 연동 여부 : { hashid(string), A(t/f), B(t/f), C(t/f), D(t/f) }
+
+* 생각해보니까 이거 그냥 table 하나로 해도 될 것 같은데 왜 두개로 나눠놨을까..
+
+* 사용자의 개인 정보는 db에 저장하지 않는다. 이는 사용자가 로그인 했을 경우 블록체인으로부터 가져와 일시적으로 저장하고, 이 후 메모리에서 날려버린다.
+
+* 포인트에 관련된 기능은 어떡하지.. 그냥 이것도 oauth의 db에 일원화 시키는게 좀 더 좋아보이긴 하는데..
+
+proposal - { hash(id+pw), A(t/f), Apoint(integer), B(t/f), BPoint(integer), ... }
+
+
+---
+
+
+회원 정보에 대한 crud먼저 생각을 해보자.
+
+create 부터..
+
+oauth에서 회원 가입을 해서 oauth 소유의 블록체인에 사용자의 정보를 넣어야 한다.
+
+사용자의 정보 입력 > 회원 가입 > 백엔드로 전달 > 백엔드가 정보를 적당히 가공해 블록체인에 넣는다.
+
+oauth server의 DB에는 사용자의 hash, 클라이언트서버 a,b,c,d에 대한 연동 여부가 t/f 로 저장된다.
+
+사용자가 oauth 서버에 로컬로그인을 할 경우 
+
+i) 즉, id와 pw를 입력할 경우, 이를 해시화 한 값을 oauth 백엔드에 전달한다.
+
+ii) 백엔드는 이 hash(id+pw)이 db에 있는지를 확인하고, 없으면 등록되지 않은 사용자라고 튕겨낸다.
+
+iii) hash(id+pw)와 일치하는 데이터 셋이 존재한다면 블록체인에 접근, 해시값을 주고 대응하는 사용자의 정보를 가져온다.
+
+>> 사용자가 마이 페이지 등의 페이지에 들어가 자신의 정보를 확인할 경우 이 블록체인에서 가져온 정보와 함께, a,b,c,d 사이트에 연동되었는지 여부를 보여주면 된다.
+
+* 여기서 의문인건 사용자가 연동한 웹 사이트의 정보를 어떤 식으로 저장할 것인가, 이 경우엔 4개라고 가정을 했지만 실제로는 게속 늘어나잖아..
+
+사용자가 연동된 웹사이트를 지속적으로 추가해 나간다면 이걸 어떤식으로 저장을 하는게 좋을까?
+
+그걸 감안한다면 연동 여부 혹은 연동 웹 사이트에 대한 정보는 블록체인 상에 배열로 저장하고 매핑을 가져오는 것도 나쁘지 않을 것 같다.
+
+hash(id+pw) => [ 연동 사이트1, 연동 사이트2, ... ] 이런 느낌?
+
+연동을 끊으면 그냥 배열의 요소를 날려버리면 되나?
+
+---
+
+그럼 로컬 로그인 기능을 먼저 구현 해보자.
+
 
