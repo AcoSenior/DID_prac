@@ -1,0 +1,229 @@
+{
+	"compiler": {
+		"version": "0.8.15+commit.e14f2714"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"name": "deleteUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"name": "getUser",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "password",
+								"type": "string"
+							},
+							{
+								"internalType": "bool",
+								"name": "A",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "B",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "C",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "D",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct IDID.User",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"name": "isRegistered",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "password",
+								"type": "string"
+							},
+							{
+								"internalType": "bool",
+								"name": "A",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "B",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "C",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "D",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct IDID.User",
+						"name": "_data",
+						"type": "tuple"
+					}
+				],
+				"name": "registerUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "password",
+								"type": "string"
+							},
+							{
+								"internalType": "bool",
+								"name": "A",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "B",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "C",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "D",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct IDID.User",
+						"name": "_data",
+						"type": "tuple"
+					}
+				],
+				"name": "updateUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"IDID.sol": "IDID"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"IDID.sol": {
+			"keccak256": "0xcb0d122c54a90580f0721e40da387a8d2ab05f34bdb99fd16dd368f5250cd220",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://93e8c844c40d9e85ffac220e5695cafbb9f24a951fa98f2d866653b32500c1ac",
+				"dweb:/ipfs/QmXgorTfpDr1Wx8mxhcSheSQaGoNkdVbgathAideCZ7qJU"
+			]
+		}
+	},
+	"version": 1
+}

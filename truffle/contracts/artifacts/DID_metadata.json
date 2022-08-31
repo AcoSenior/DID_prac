@@ -1,0 +1,263 @@
+{
+	"compiler": {
+		"version": "0.8.15+commit.e14f2714"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"name": "deleteUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"name": "getUser",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "password",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "uuid",
+								"type": "string"
+							},
+							{
+								"internalType": "bool",
+								"name": "A",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "B",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "C",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "D",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct IDID.User",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					}
+				],
+				"name": "isRegistered",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "password",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "uuid",
+								"type": "string"
+							},
+							{
+								"internalType": "bool",
+								"name": "A",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "B",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "C",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "D",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct IDID.User",
+						"name": "_data",
+						"type": "tuple"
+					}
+				],
+				"name": "registerUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_hashedId",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "password",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "uuid",
+								"type": "string"
+							},
+							{
+								"internalType": "bool",
+								"name": "A",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "B",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "C",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "D",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct IDID.User",
+						"name": "_data",
+						"type": "tuple"
+					}
+				],
+				"name": "updateUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/DID.sol": "DID"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/DID.sol": {
+			"keccak256": "0x7fc6ac5a9dd9a39f19ace4c5e3a409cd65812eaefe171fbba5f9309fbd4ebac7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://dd8607e0fb930cfa459d837580e82c1ecf666effadae4d3a25ce65157d42d674",
+				"dweb:/ipfs/QmQwGKw3emJx7AAe3mJBrqqG1SKZfaHEo9BV5i8Vufh5Mr"
+			]
+		},
+		"contracts/IDID.sol": {
+			"keccak256": "0x2e6a211760e5cfa1c28d068be3fa885707f808369033526c90009b567a03bd24",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f3d512b4f541bf13359068c9231e0cb5b3ae938c938cecc8553207192db927b0",
+				"dweb:/ipfs/QmWk7maZGiwiXBdRmCfiT3Lc9wBm54uAr4oXsEFVra8c3u"
+			]
+		}
+	},
+	"version": 1
+}

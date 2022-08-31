@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+    back_a:
+        build:
+            context: ${PWD}/back
+            dockerfile: ${PWD}/back/Dockerfile
+        ports:
+            - 4001:4001
+
+    back_b:
+        build:
+            context: ${PWD}/back
+            dockerfile: ${PWD}/back/Dockerfile
+        ports:
+            - 4002:4002
+
+    back_c:
+        build:
+            context: ${PWD}/back
+            dockerfile: ${PWD}/back/Dockerfile
+        ports:
+            - 4003:4003
+
+    back_d:
+        build:
+            context: ${PWD}/back
+            dockerfile: ${PWD}/back/Dockerfile
+        ports:
+            - 4004:4004
