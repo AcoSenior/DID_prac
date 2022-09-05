@@ -13,16 +13,12 @@ import Link from "next/link.js";
 // rest api를 발급받고 redirect uri를 발급받을 로컬 서버 관리자는
 // 로그인이 된 상태라고 가정
 
-const Mypage = ({ appList }) => {
+const Mypage = ({ email, appList }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [myAppList, setmyAppList] = useState(appList);
-
-  const createApp = () => {
-    location.href = `${frontend}/appRegi`;
-  };
+  const [userEmail, setUsermail] = useState(email);
 
   const getMyApp = async () => {
-    const email = "619049@naver.com";
     const response = await axios.post(`${backend}/api/appl/getMyApp`, {
       email: email,
     });
@@ -30,7 +26,7 @@ const Mypage = ({ appList }) => {
     setmyAppList(response.data.myapp);
   };
 
-  const showAppList = myAppList.map((v, k) => {
+  const showAppList = myAppList?.map((v, k) => {
     return (
       <Box p="5%" key={k}>
         <Flex justifyContent={"space-around"}>
@@ -47,18 +43,20 @@ const Mypage = ({ appList }) => {
     );
   });
 
-  useEffect(() => {
+  const closeAndUpdate = () => {
+    onClose();
     getMyApp();
-  }, [isOpen]);
+  };
 
   return (
     <>
+      <Text>{email}</Text>
       <Box px="5%" py="5%" w="70%" mx="auto" my="0">
         <Flex mx="auto" my="0" justifyContent={"center"} mb="10%">
           <Box w="40%" mx="auto" my="0">
             <Text>어플리케이션 등록</Text>
             <Button onClick={onOpen}>어플리케이션 생성</Button>
-            <AppModal isOpen={isOpen} onClose={onClose} />
+            <AppModal isOpen={isOpen} onClose={closeAndUpdate} />
           </Box>
         </Flex>
         <Flex>
@@ -73,10 +71,15 @@ const Mypage = ({ appList }) => {
   );
 };
 
-export const getServerSideProps = async () => {
-  const email = "619049@naver.com";
+export const getServerSideProps = async (ctx) => {
+  const cookie = ctx.req ? ctx.req.headers.cookie : "";
+  const encodedCookie = cookie.split("=")[1];
+  const email = JSON.parse(
+    Buffer.from(encodedCookie, "base64").toString("utf-8")
+  ).email;
+
   const response = await axios.post(`${backend}/api/appl/getMyApp`, {
-    email: email,
+    email,
   });
 
   return { props: { appList: response.data.myapp } };

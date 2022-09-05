@@ -71,7 +71,7 @@ router.post('/apiDistribution', async (req, res) => {
 
 router.use('/getMyApp', async (req, res) => {
     const { email } = req.body;
-    console.log('qweq');
+    console.log(email);
     try {
         const myAppName = await AppInfo.findAll({
             where: {
@@ -85,6 +85,11 @@ router.use('/getMyApp', async (req, res) => {
         res.json(response);
     } catch (e) {
         console.log(e.message);
+        const response = {
+            status: false,
+            msg: '서버 에러',
+        };
+        res.json(response);
     }
 });
 

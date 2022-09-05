@@ -77,6 +77,12 @@ const register = () => {
       return;
     }
 
+    console.log(age);
+    if (age == "" || age == 0) {
+      alert("나이는 숫자만 입력해주세요.");
+      return;
+    }
+
     const regiEmail = email + domain;
 
     try {
