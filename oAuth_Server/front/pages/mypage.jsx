@@ -1,7 +1,7 @@
-import { Box, Button, Flex, Text, useDisclosure} from "@chakra-ui/react";
-import axios from 'axios'
+import { Box, Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import axios from "axios";
 import { useEffect, useState } from "react";
-import { backend, frontend } from '../utils/ip.js'
+import { backend, frontend } from "../utils/ip.js";
 
 import AppModal from "../components/appModal.jsx";
 import Link from "next/link.js";
@@ -13,66 +13,73 @@ import Link from "next/link.js";
 // rest api를 발급받고 redirect uri를 발급받을 로컬 서버 관리자는
 // 로그인이 된 상태라고 가정
 
-const Mypage = ({appList}) => {
-    const {isOpen, onOpen, onClose} = useDisclosure();
-    const [ myAppList, setmyAppList ] = useState(appList)
-    
-    const createApp = () => {
-        location.href=`${frontend}/appRegi`
-    }
+const Mypage = ({ appList }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [myAppList, setmyAppList] = useState(appList);
 
-    const getMyApp = async () => {
-        const email = '619049@naver.com'
-        const response = await axios.post(`${backend}/api/oauth/getMyApp`, {email: email})
-        
-        setmyAppList(response.data.myapp)
-    }
+  const createApp = () => {
+    location.href = `${frontend}/appRegi`;
+  };
 
-    const showAppList = myAppList.map((v,k) => {
-        return(
-            <Box p='5%' key={k}>
-                <Flex justifyContent={'space-around'}>
-                    <Text px ='5%'><Link href={{pathname:`/appinfo`, query:{appName: v.appName}}}>{v.appName}</Link></Text>
-                    <Text>{v.restAPI}</Text>
-                </Flex>
-            </Box>
-        );
+  const getMyApp = async () => {
+    const email = "619049@naver.com";
+    const response = await axios.post(`${backend}/api/appl/getMyApp`, {
+      email: email,
     });
 
-    useEffect(()=> {
-        getMyApp()
-    },[isOpen])
+    setmyAppList(response.data.myapp);
+  };
 
+  const showAppList = myAppList.map((v, k) => {
     return (
-      <>
-        <Box px='5%' py='5%' w='70%' mx='auto' my='0'>
-            <Flex mx='auto' my='0' justifyContent={'center'} mb='10%'>
-                <Box w='40%' mx='auto' my='0'>
-                    <Text>어플리케이션 등록</Text>
-                    <Button onClick={onOpen}>어플리케이션 생성</Button>
-                    <AppModal isOpen={isOpen} onClose={onClose}/>
-                </Box>
-            </Flex>
-            <Flex>
-                <Box mx='auto' my='0' justifyContent={'center'}>
-                    <Text>내 어플리케이션</Text>
-                    
-                    <Box>
-                        {showAppList}
-                    </Box>
-                </Box>
-            </Flex>
-        </Box>
-      </>
-    )
-}
+      <Box p="5%" key={k}>
+        <Flex justifyContent={"space-around"}>
+          <Text px="5%">
+            <Link
+              href={{ pathname: `/appinfo`, query: { appName: v.appName } }}
+            >
+              {v.appName}
+            </Link>
+          </Text>
+          <Text>{v.restAPI}</Text>
+        </Flex>
+      </Box>
+    );
+  });
 
-export const getServerSideProps = async () => {
-    const email = '619049@naver.com'
-    const response = await axios.post(`${backend}/api/oauth/getMyApp`, {email: email})
-  
-    return { props: {appList : response.data.myapp} };
+  useEffect(() => {
+    getMyApp();
+  }, [isOpen]);
+
+  return (
+    <>
+      <Box px="5%" py="5%" w="70%" mx="auto" my="0">
+        <Flex mx="auto" my="0" justifyContent={"center"} mb="10%">
+          <Box w="40%" mx="auto" my="0">
+            <Text>어플리케이션 등록</Text>
+            <Button onClick={onOpen}>어플리케이션 생성</Button>
+            <AppModal isOpen={isOpen} onClose={onClose} />
+          </Box>
+        </Flex>
+        <Flex>
+          <Box mx="auto" my="0" justifyContent={"center"}>
+            <Text>내 어플리케이션</Text>
+
+            <Box>{showAppList}</Box>
+          </Box>
+        </Flex>
+      </Box>
+    </>
+  );
 };
 
+export const getServerSideProps = async () => {
+  const email = "619049@naver.com";
+  const response = await axios.post(`${backend}/api/appl/getMyApp`, {
+    email: email,
+  });
+
+  return { props: { appList: response.data.myapp } };
+};
 
 export default Mypage;
