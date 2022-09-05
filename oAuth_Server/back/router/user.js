@@ -216,6 +216,53 @@ router.post('/oAuthRegister', async (req, res) => {
     }
 });
 
+router.use('/oauthlogin', async (req, res) => {
+    const { userID, userPw } = req.body;
+    console.log(userID, userPw);
+    const userHash = userID + userPw;
+    const hash = crypto.createHash('sha256').update(userHash).digest('base64');
+
+    try {
+        const deploy = await deployed();
+        const result = await deploy.methods.getUser(hash).call();
+        console.log(result);
+
+        if (result[2] == 0) throw new Error('id,pw 확인');
+
+        const cookiedough = {
+            name: result[0],
+            age: result[1],
+            gender: result[2],
+            addr: result[3],
+            mobile: result[4],
+            email: result[5],
+        };
+
+        let token = jwt.sign(
+            {
+                ...cookiedough,
+            },
+            process.env.SECRET,
+        );
+
+        res.cookie('user', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        const response = {
+            status: true,
+            result,
+            token,
+        };
+
+        res.json(response);
+    } catch (e) {
+        console.log(e.message);
+        const response = {
+            status: false,
+            msg: '서버 에러 혹은 블록체인 에러',
+        };
+        res.json(response);
+    }
+});
+
 router.post('/upDatePassword', async (req, res) => {
     const { email, newPassword, oldPassword } = req.body;
 
