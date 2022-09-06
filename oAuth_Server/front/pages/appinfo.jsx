@@ -18,12 +18,14 @@ import { backend } from "../utils/ip.js";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const AppInfo = () => {
+const AppInfo = ({ email }) => {
   const router = useRouter();
-  const email = "619049@naver.com";
+  // console.log(appInfo);
   const appName = router.query.appName;
   const [showInfo, setShowInfo] = useState(false);
   const [appInfo, setAppInfo] = useState(undefined);
+  const [appRestAPI, setappRestAPI] = useState(undefined);
+  const [appSecret, setAppSecret] = useState(undefined);
   const [isModifying, setIsModifying] = useState(null);
   const [uri, seturi] = useState(undefined);
 
@@ -31,12 +33,16 @@ const AppInfo = () => {
   const [getUserInfo, setGetUserInfo] = useState(undefined);
 
   const revealInfo = async () => {
+    // console.log(router.query.appName);
     const response = await axios.post(`${backend}/api/appl/appinfo`, {
       appName: router.query.appName,
       email: email,
     });
     console.log(response.data);
-    setAppInfo(response.data.appInfo);
+
+    setappRestAPI(response.data.appInfo.restAPI);
+    setAppSecret(response.data.appInfo.clientSecretKey);
+
     seturi(response.data.appInfo.redirectURI);
     setGetUserInfo(response.data.appInfo.getInfo);
     setShowInfo(true);
@@ -73,7 +79,7 @@ const AppInfo = () => {
 
     const response = await axios.post(`${backend}/api/appl/getInfoUpdate`, {
       getUserInfor: getUserInfo,
-      RestAPI: appInfo.restAPI,
+      RestAPI: appRestAPI,
     });
     alert(response.data.msg);
   };
@@ -177,8 +183,8 @@ const AppInfo = () => {
                   </Thead>
                   <Tbody>
                     <Tr>
-                      <Td textAlign={"center"}>{appInfo.restAPI}</Td>
-                      <Td textAlign={"center"}>{appInfo.clientSecretKey}</Td>
+                      <Td textAlign={"center"}>{appRestAPI}</Td>
+                      <Td textAlign={"center"}>{appSecret}</Td>
                     </Tr>
                   </Tbody>
                 </Table>
@@ -232,15 +238,21 @@ const AppInfo = () => {
   );
 };
 
-// export const getServerSideProps = async () => {
-//     const router = useRouter()
-//     const email = '619049@naver.com'
-//     const appName = router.pathname.split('?')[1].split('=')[1]
-//     const qwe = router.query
-//     console.log(appName, qwe)
-//     const response = await axios.post(`${backend}/api/oauth/getMyApp`, {appName: appName, email:email})
+// export const getServerSideProps = async (ctx) => {
+//   const appName = ctx.req.url.split("?")[1].split("=")[1];
 
-//     return { props: {appInfo : response.data.status} };
+//   const cookie = ctx.req ? ctx.req.headers.cookie : "";
+//   const encodedCookie = cookie.split("=")[1];
+//   const email = JSON.parse(
+//     Buffer.from(encodedCookie, "base64").toString("utf-8")
+//   ).email;
+
+//   const response = await axios.post(`${backend}/api/appl/appInfo`, {
+//     appName: appName,
+//     email: email,
+//   });
+
+//   return { props: { appInfo: response.data.appInfor } };
 // };
 
 export default AppInfo;

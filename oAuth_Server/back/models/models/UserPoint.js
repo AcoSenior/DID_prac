@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const UserPoint = sequelize.define(
         'UserPoint',
         {
-            hash: {
+            email: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },

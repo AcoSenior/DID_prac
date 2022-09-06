@@ -8,8 +8,8 @@ const nodeMailer = require('nodemailer');
 const router = express.Router();
 const DID = require('../contracts/DID.json');
 const { deployed } = require('../web3.js');
-const { UserInfo } = require('../models/models/UserInfo.js');
 const { Op } = require('sequelize');
+const { AppInfo, RedirectURI, getUserInfo, UserPoint, UserInfo } = require('../models');
 
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.OPTIMISM_GOERLI_URL));
 
@@ -186,7 +186,7 @@ router.post('/oAuthRegister', async (req, res) => {
         };
 
         const deploy = await deployed();
-        console.log(hash);
+
         await deploy.methods.registerUser(hash, DATA).send({
             from: process.env.WALLET_ADDRESS,
             gas: 1000000,
@@ -196,7 +196,6 @@ router.post('/oAuthRegister', async (req, res) => {
         console.log(result);
         if (result) {
             await UserInfo.create({
-                hash: hash,
                 email: email,
             });
             const response = {
@@ -218,7 +217,7 @@ router.post('/oAuthRegister', async (req, res) => {
 
 router.use('/oauthlogin', async (req, res) => {
     const { userID, userPw } = req.body;
-    console.log(userID, userPw);
+
     const userHash = userID + userPw;
     const hash = crypto.createHash('sha256').update(userHash).digest('base64');
 
@@ -267,14 +266,13 @@ router.post('/upDatePassword', async (req, res) => {
     const { email, newPassword, oldPassword } = req.body;
 
     try {
-        console.log(req.body);
         const previousHash = email + oldPassword;
         const newpasswordId = email + newPassword;
         const oldHash = crypto.createHash('sha256').update(previousHash).digest('base64');
         const newHash = crypto.createHash('sha256').update(newpasswordId).digest('base64');
         const deploy = await deployed();
         await deploy.methods.updatePassword(oldHash, newHash).send({
-            from: '0x7b6283591c09b1a738a46Acc0BBFbb5943EDb4F4',
+            from: process.env.WALLET_ADDRESS,
         });
 
         const result = await deploy.methods.getUser(oldHash).call();
@@ -323,24 +321,92 @@ router.post('/searchUser', async (req, res) => {
     const deploy = await deployed();
     const result = await deploy.methods.getUser(hash).call();
     console.log(result);
+    res.json(result);
 });
 
 router.post('/deleteUser', async (req, res) => {
     const { email, password } = req.body;
-    // 에러수정
 
     try {
         const userHash = email + password;
         const hash = crypto.createHash('sha256').update(userHash).digest('base64');
         const deploy = await deployed();
-        await deploy.methods.deleteUser('asdf').send({
-            from: '0x7b6283591c09b1a738a46Acc0BBFbb5943EDb4F4',
+
+        // 삭제시 건들 데이터 베이스가 참 많습니다..
+
+        // 우선 그 사람이 만든 app과 그 app의 rediretURI를 다 지워야 합니다.
+        const deletedUsersApp = await AppInfo.findAll({
+            where: {
+                owner: email,
+            },
+        });
+
+        let tempAppList = [];
+
+        for (let i = 0; i < deletedUsersApp.length; i++) {
+            tempAppList.push(deletedUsersApp[i].dataValues.RestAPI);
+        }
+
+        // 탈퇴 유저의 restapi의 리다이렉트 uri 전부 삭제
+        for (let i = 0; i < tempAppList.length; i++) {
+            await RedirectURI.destroy({
+                where: {
+                    RestAPI: tempAppList[i],
+                },
+            });
+        }
+
+        // 탈퇴 유저의 어플리케이션의 사용자 정보 요청 데이터 삭제
+        for (let i = 0; i < tempAppList.length; i++) {
+            await getUserInfo.destroy({
+                where: {
+                    RestAPI: tempAppList[i],
+                },
+            });
+        }
+
+        // 탈퇴 유저의 app 전부 삭제
+        await AppInfo.destroy({
+            where: {
+                owner: email,
+            },
+        });
+
+        // userPoint에서 연동된 사이트 관한 정보 삭제
+        await UserPoint.destroy({
+            where: {
+                email: email,
+            },
+        });
+
+        // 사용자 정보 삭제
+        await UserInfo.destroy({
+            where: {
+                email: email,
+            },
+        });
+
+        await deploy.methods.deleteUser(hash).send({
+            from: process.env.WALLET_ADDRESS,
             gas: 10000000,
         });
         const result = await deploy.methods.getUser(hash).call();
         console.log(result);
+
+        const response = {
+            status: true,
+            result,
+            msg: '회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.',
+        };
+
+        res.json(response);
     } catch (error) {
         console.log(error);
+        const response = {
+            status: false,
+            msg: '탈퇴 실패',
+        };
+        res.json(response);
     }
 });
 

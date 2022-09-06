@@ -1,7 +1,20 @@
-import { Box, Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Text,
+  useDisclosure,
+  Tab,
+  Tabs,
+  TabList,
+  TabPanels,
+  TabPanel,
+  Input,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { backend, frontend } from "../utils/ip.js";
+import { deleteCookie } from "cookies-next";
 
 import AppModal from "../components/appModal.jsx";
 import Link from "next/link.js";
@@ -13,7 +26,7 @@ import Link from "next/link.js";
 // rest api를 발급받고 redirect uri를 발급받을 로컬 서버 관리자는
 // 로그인이 된 상태라고 가정
 
-const Mypage = ({ email, appList }) => {
+const Mypage = ({ email, age, name, mobile, addr, gender, appList }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [myAppList, setmyAppList] = useState(appList);
   const [userEmail, setUsermail] = useState(email);
@@ -48,25 +61,96 @@ const Mypage = ({ email, appList }) => {
     getMyApp();
   };
 
+  const [getDelete, setGetDelete] = useState(false);
+  const [deleteKey, setDeleteKey] = useState("");
+
+  const confirmDelete = async () => {
+    const response = await axios.post(`${backend}/api/oauth/deleteUser`, {
+      email,
+      password: deleteKey,
+    });
+
+    deleteCookie("loginInfo", { path: "/", domain: `localhost` });
+
+    if (response.data.status == true) {
+      alert(response.data.msg);
+      location.href = `${frontend}`;
+      return;
+    }
+
+    if (response.data.status == false) {
+      alert(response.data.msg);
+      return;
+    }
+  };
+
   return (
     <>
-      <Text>{email}</Text>
-      <Box px="5%" py="5%" w="70%" mx="auto" my="0">
-        <Flex mx="auto" my="0" justifyContent={"center"} mb="10%">
-          <Box w="40%" mx="auto" my="0">
-            <Text>어플리케이션 등록</Text>
-            <Button onClick={onOpen}>어플리케이션 생성</Button>
-            <AppModal isOpen={isOpen} onClose={closeAndUpdate} />
-          </Box>
-        </Flex>
-        <Flex>
-          <Box mx="auto" my="0" justifyContent={"center"}>
-            <Text>내 어플리케이션</Text>
+      <Tabs>
+        <TabList>
+          <Tab>내 정보</Tab>
+          <Tab>어플리케이션 관리</Tab>
+        </TabList>
 
-            <Box>{showAppList}</Box>
-          </Box>
-        </Flex>
-      </Box>
+        <TabPanels>
+          <TabPanel>
+            <Text>내 정보</Text>
+            <Box>
+              <Text>{email}</Text>
+              <Text>{name}</Text>
+              <Text>{age}</Text>
+              <Text>{mobile}</Text>
+              <Text>{addr}</Text>
+              <Text>{gender}</Text>
+            </Box>
+            <Box>
+              <Button>회원 수정</Button>
+
+              <Box>
+                {getDelete == false ? (
+                  <Button
+                    onClick={() => {
+                      setGetDelete(!getDelete);
+                    }}
+                  >
+                    회원 탈퇴
+                  </Button>
+                ) : (
+                  <>
+                    <Input
+                      type="password"
+                      placeholder="회원 탈퇴를 하려면 비밀번호를 입력해주세요."
+                      onChange={(e) => {
+                        setDeleteKey(e.target.value);
+                      }}
+                    />
+                    <Button onClick={confirmDelete}>탈퇴확인</Button>
+                  </>
+                )}
+              </Box>
+            </Box>
+          </TabPanel>
+          <TabPanel>
+            <Text>{email}</Text>
+            <Box px="5%" py="5%" w="70%" mx="auto" my="0">
+              <Flex mx="auto" my="0" justifyContent={"center"} mb="10%">
+                <Box w="40%" mx="auto" my="0">
+                  <Text>어플리케이션 등록</Text>
+                  <Button onClick={onOpen}>어플리케이션 생성</Button>
+                  <AppModal isOpen={isOpen} onClose={closeAndUpdate} />
+                </Box>
+              </Flex>
+              <Flex>
+                <Box mx="auto" my="0" justifyContent={"center"}>
+                  <Text>내 어플리케이션</Text>
+
+                  <Box>{showAppList}</Box>
+                </Box>
+              </Flex>
+            </Box>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   );
 };

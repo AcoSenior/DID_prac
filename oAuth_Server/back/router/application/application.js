@@ -94,11 +94,13 @@ router.use('/getMyApp', async (req, res) => {
 });
 
 router.use('/appInfo', async (req, res) => {
-    const { appName } = req.body;
+    const { appName, email } = req.body;
+    console.log(appName, email);
     try {
         const thatApp = await AppInfo.findOne({
             where: {
                 appName: appName,
+                owner: email,
             },
         });
 
@@ -115,9 +117,11 @@ router.use('/appInfo', async (req, res) => {
 
         if (redirectURI.length !== 0) {
             for (let i = 0; i < redirectURI.length; i++) {
-                realSender[i] = redirectURI[i];
+                realSender[i] = redirectURI[i].redirectURI;
             }
         }
+
+        console.log(realSender);
 
         // getUserInfo
         const infoReq = await getUserInfo.findOne({
@@ -142,6 +146,8 @@ router.use('/appInfo', async (req, res) => {
                 { att: 'mobile', get: infoReq.mobile },
             ],
         };
+
+        // console.log(appInfor);
 
         const response = {
             status: true,
